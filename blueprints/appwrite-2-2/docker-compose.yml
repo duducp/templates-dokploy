@@ -23,6 +23,23 @@ services:
       timeout: 5s
       retries: 12
       start_period: 120s
+    labels:
+      - traefik.enable=true
+      - 'traefik.http.routers.appwrite-sites-wildcard.rule=HostRegexp(`^.+\.${_APP_DOMAIN_SITES}$$`)'
+      - traefik.http.routers.appwrite-sites-wildcard.entrypoints=web
+      - traefik.http.routers.appwrite-sites-wildcard.service=appwrite-wildcard
+      - 'traefik.http.routers.appwrite-sites-wildcard-secure.rule=HostRegexp(`^.+\.${_APP_DOMAIN_SITES}$$`)'
+      - traefik.http.routers.appwrite-sites-wildcard-secure.entrypoints=websecure
+      - traefik.http.routers.appwrite-sites-wildcard-secure.tls=true
+      - traefik.http.routers.appwrite-sites-wildcard-secure.service=appwrite-wildcard
+      - 'traefik.http.routers.appwrite-functions-wildcard.rule=HostRegexp(`^.+\.${_APP_DOMAIN_FUNCTIONS}$$`)'
+      - traefik.http.routers.appwrite-functions-wildcard.entrypoints=web
+      - traefik.http.routers.appwrite-functions-wildcard.service=appwrite-wildcard
+      - 'traefik.http.routers.appwrite-functions-wildcard-secure.rule=HostRegexp(`^.+\.${_APP_DOMAIN_FUNCTIONS}$$`)'
+      - traefik.http.routers.appwrite-functions-wildcard-secure.entrypoints=websecure
+      - traefik.http.routers.appwrite-functions-wildcard-secure.tls=true
+      - traefik.http.routers.appwrite-functions-wildcard-secure.service=appwrite-wildcard
+      - traefik.http.services.appwrite-wildcard.loadbalancer.server.port=80
     volumes:
       - appwrite-uploads:/storage/uploads:rw
       - appwrite-imports:/storage/imports:rw

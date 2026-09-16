@@ -40,6 +40,7 @@ env = [
   "_APP_OPTIONS_FORCE_HTTPS=enabled",
   "_APP_OPTIONS_ROUTER_FORCE_HTTPS=disabled",
   "_APP_OPTIONS_ROUTER_PROTECTION=disabled",
+  "_APP_ROUTER_AUTO_CERTIFICATES=disabled",
   "_APP_OPTIONS_ABUSE=enabled",
   "_APP_OPTIONS_ABUSE_INCREASED_LIMIT_PROJECTS=increased-limit-project",
   "_APP_CONSOLE_DOMAIN=${main_domain}",
