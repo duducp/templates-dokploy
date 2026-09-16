@@ -50,10 +50,14 @@ services:
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
     depends_on:
-      - redis
-      - ${_APP_DB_HOST:-postgresql}
-      - appwrite-geo
-      - appwrite-autogravity
+      redis:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+      appwrite-geo:
+        condition: service_healthy
+      appwrite-autogravity:
+        condition: service_started
     environment:
       - _APP_ENV
       - _APP_USAGE_STATS
