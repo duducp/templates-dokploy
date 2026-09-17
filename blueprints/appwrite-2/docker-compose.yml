@@ -1514,14 +1514,13 @@ services:
       start_period: 5s
 
   openruntimes-executor:
-    hostname: exc1
-    # The executor looks itself up in Docker by matching its hostname against
-    # the container name. Without container_name the generated name is
-    # "<project>-openruntimes-executor-1", the lookup fails and the executor
-    # crash loops with "Own container not found" (appwrite/appwrite#13016).
-    # Keep container_name in sync with hostname (also required by
-    # _APP_EXECUTOR_HOST=http://exc1/v1).
-    container_name: exc1
+    # Must stay equal to the service name: the executor finds its own container
+    # with gethostname() against Docker's name filter, and the generated name is
+    # "<project>-openruntimes-executor-1" (substring match). A hostname like
+    # "exc1" makes the lookup fail and the executor crash loops with
+    # "Own container not found" (appwrite/appwrite#13016). Keep it in sync with
+    # _APP_EXECUTOR_HOST=http://openruntimes-executor/v1.
+    hostname: openruntimes-executor
     logging:
       driver: json-file
       options:
