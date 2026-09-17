@@ -1,6 +1,6 @@
 {
-  "id": "appwrite-2-2",
-  "name": "Appwrite 2.2",
+  "id": "appwrite-2",
+  "name": "Appwrite 2",
   "version": "2.2.0",
   "description": "Appwrite is an end-to-end platform for building Web, Mobile, Native, or Backend apps, packaged as a set of Docker microservices. This template deploys Appwrite 2.2 with PostgreSQL, MongoDB, Redis, ClickHouse, Open Runtimes, and the Appwrite Console for self-hosted application development.",
   "links": {
