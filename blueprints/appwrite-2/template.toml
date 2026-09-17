@@ -1,5 +1,15 @@
+# Appwrite 2 exposes the API, the Console, Sites and Functions on separate hosts.
+# Defaults below keep a single main domain for API + Console while Sites and
+# Functions live on their own subdomains. To separate the Console from the API
+# (e.g. to protect it behind Cloudflare Access without exposing the public API),
+# change `console_domain` to a dedicated host such as "console.example.com".
+#   API        -> ${main_domain}/v1        (and /v1/realtime, /.well-known)
+#   Console    -> ${console_domain}/
+#   Sites      -> ${sites_domain}
+#   Functions  -> ${functions_domain}
 [variables]
 main_domain = "${domain}"
+console_domain = "console.${main_domain}"
 functions_domain = "functions.${main_domain}"
 sites_domain = "sites.${main_domain}"
 openssl_key = "${password:32}"
@@ -43,8 +53,8 @@ env = [
   "_APP_ROUTER_AUTO_CERTIFICATES=disabled",
   "_APP_OPTIONS_ABUSE=enabled",
   "_APP_OPTIONS_ABUSE_INCREASED_LIMIT_PROJECTS=increased-limit-project",
-  "_APP_CONSOLE_DOMAIN=${main_domain}",
-  "_APP_CONSOLE_HOSTNAMES=${main_domain}",
+  "_APP_CONSOLE_DOMAIN=${console_domain}",
+  "_APP_CONSOLE_HOSTNAMES=${console_domain}",
   "_APP_CONSOLE_SCHEMA=appwriteio",
   "_APP_CONSOLE_SESSION_ALERTS=disabled",
   "_APP_CONSOLE_TRUSTED_PROJECTS=",
@@ -248,6 +258,7 @@ chown mongodb:mongodb "$KEYFILE_PATH" 2>/dev/null || chown 999:999 "$KEYFILE_PAT
 exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --auth --keyFile "$KEYFILE_PATH"
 """
 
+# --- Main domain: API + Console (kept for backwards compatibility) ---
 [[config.domains]]
 serviceName = "appwrite-console"
 port = 3000
@@ -272,6 +283,30 @@ port = 80
 host = "${main_domain}"
 path = "/v1/realtime"
 
+# --- Dedicated Console domain ---
+# The Console SPA is served at the root of ${console_domain}. Requests to
+# /v1 and /v1/realtime on that same host are proxied to the API and Realtime
+# services so the Console reaches the API on its own origin. No wildcard is
+# used here; Sites and Functions keep their own wildcard hosts below.
+[[config.domains]]
+serviceName = "appwrite-console"
+port = 3000
+host = "${console_domain}"
+path = "/"
+
+[[config.domains]]
+serviceName = "appwrite"
+port = 80
+host = "${console_domain}"
+path = "/v1"
+
+[[config.domains]]
+serviceName = "appwrite-realtime"
+port = 80
+host = "${console_domain}"
+path = "/v1/realtime"
+
+# --- Sites and Functions (wildcards handled by Traefik HostRegexp labels) ---
 [[config.domains]]
 serviceName = "appwrite"
 port = 80
